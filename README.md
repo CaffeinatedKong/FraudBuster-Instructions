@@ -2,49 +2,13 @@
 
 A cloud-distributed microservices system for detecting fraudulent and bot-generated product reviews using machine learning models, gRPC communication, and distributed caching.
 
-## 📋 Overview
-
-FraudBuster analyzes Amazon product reviews to identify generic, bot-generated, and fraudulent reviews using pretrained BERT models. The system features a microservices architecture with 6 custom services communicating via gRPC, backed by Redis caching and MongoDB persistence.
-
-## 🏗️ Architecture
-
-**Microservices:**
-- `flask-app` - HTTP API Gateway & Web Frontend (Port 5000)
-- `review-classifier` - ML-powered review classification using BERT (Port 50051)
-- `relevance-scorer` - Review relevance scoring service (Port 50052)
-- `scraper` - Amazon product review scraper (Port 50053)
-- `mongo-store` - gRPC database writer service (Port 50054)
-- `scheduler` - Background task orchestrator
-
-**Infrastructure:**
-- Redis - Distributed cache layer (Port 6379)
-- MongoDB 7 - Persistent data storage (Port 27017)
-
-**Communication:** All microservices communicate via gRPC with Protocol Buffers
-
-## 📁 Project Structure
-
-```
-.
-├── dataset/                    # Training dataset for review-classifier model
-├── flask-app/                  # API Gateway microservice
-├── k8s/                        # Kubernetes deployment files
-│   ├── run_fraudbuster(win).bat    # Windows deployment script
-│   └── run_fraudbuster(mac).sh     # Mac/Linux deployment script
-├── mongo-store/                # Database writer microservice
-├── protos/                     # gRPC Protocol Buffer definitions
-├── relevance-scorer/           # Review scoring microservice
-├── review-classifier/          # ML classification microservice
-├── scheduler/                  # Task orchestration microservice
-├── scraper/                    # Web scraping microservice
-├── docker-compose.yml          # Docker Compose configuration
-└── README.md                   # This file
-```
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
+Ensure you have the following installed on your machine:
 - Docker Desktop (version 20.10+)
 - Docker Compose (version 2.0+)
 - (Optional) Minikube + kubectl for Kubernetes deployment
@@ -52,186 +16,173 @@ FraudBuster analyzes Amazon product reviews to identify generic, bot-generated, 
 ### Installation
 
 1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd <repository-folder>
-   ```
 
-2. **Pull all service images from Docker Hub:**
-   ```bash
-   docker-compose pull
-   ```
-   *Wait time: ~2-5 minutes depending on internet speed*
-
-3. **Start all services:**
-   ```bash
-   docker-compose up --build
-   ```
-   *Services will initialize in ~30 seconds*
-
-4. **Verify all containers are running:**
-   ```bash
-   docker ps
-   ```
-   *Expected: 8 running containers*
-
-5. **Access the application:**
-   ```
-   http://localhost:5000
-   ```
-
-### Basic Commands
-
-**View logs:**
 ```bash
-docker-compose logs -f <service-name>
-# Example: docker-compose logs -f flask-app
-```
+git clone <repository-url>
+cd <repository-folder>
+Pull all service images from Docker Hub:
 
-**Restart a specific service:**
-```bash
-docker-compose restart <service-name>
-```
-
-**Stop all services:**
-```bash
-docker-compose down
-```
-
-**Update to latest images:**
-```bash
+bash
+Copy code
 docker-compose pull
-docker-compose up -d --force-recreate
-```
+Wait time: ~2-5 minutes depending on internet speed
 
-## ☸️ Kubernetes Deployment (Alternative)
+Start all services:
 
+bash
+Copy code
+docker-compose up --build
+Services will initialize in ~30 seconds
+
+Verify all containers are running:
+
+bash
+Copy code
+docker ps
+Expected: 8 running containers
+
+Access the application:
+
+Open your browser and go to:
+
+arduino
+Copy code
+http://localhost:5000
+📸 Screenshots of the Application
+Once you’ve accessed the application, wait for the scraper to finish. You’ll see the results once scraping is complete.
+
+Insert image of the application interface when running, e.g., loading page or results page.
+
+🧪 Testing
+Test Case 1: Scraping Reviews
+Description: Test the scraper microservice to ensure it accurately scrapes reviews from an Amazon product page.
+
+Input: A valid Amazon product URL.
+
+Expected Output: A list of reviews (including reviewer name, rating, and review text).
+
+Insert screenshot here for Test Case 1 output.
+
+Test Case 2: Fake Review Classification
+Description: Test the review-classifier microservice to check the accuracy of fake review detection.
+
+Input: A set of example reviews (both fake and original).
+
+Expected Output: A classification of each review as either "Fake" or "Original".
+
+Insert screenshot here for Test Case 2 output.
+
+Test Case 3: Review Relevance Scoring
+Description: Test the relevance-scorer microservice to evaluate review relevance to the product.
+
+Input: Product feature bullets and review text.
+
+Expected Output: A relevance score indicating how related the review is to the product.
+
+Insert screenshot here for Test Case 3 output.
+
+☸️ Kubernetes Deployment (Alternative)
 For Kubernetes/Minikube deployment:
 
-1. **Ensure Minikube is running:**
-   ```bash
-   minikube start
-   ```
+Ensure Minikube is running:
 
-2. **Navigate to k8s folder:**
-   ```bash
-   cd k8s
-   ```
+bash
+Copy code
+minikube start
+Navigate to the k8s folder:
 
-3. **Run the deployment script:**
+bash
+Copy code
+cd k8s
+Run the deployment script:
 
-   **Windows:**
-   ```bash
-   run_fraudbuster(win).bat
-   ```
+Windows:
 
-   **Mac/Linux:**
-   ```bash
-   chmod +x run_fraudbuster(mac).sh
-   ./run_fraudbuster(mac).sh
-   ```
+bash
+Copy code
+run_fraudbuster(win).bat
+Mac/Linux:
 
-4. **Check pod status:**
-   ```bash
-   kubectl get pods -w
-   ```
-   *Wait until all pods show STATUS: Running*
+bash
+Copy code
+chmod +x run_fraudbuster(mac).sh
+./run_fraudbuster(mac).sh
+Check pod status:
 
-5. **Access the service:**
-   ```bash
-   minikube service flask-app-service
-   ```
+bash
+Copy code
+kubectl get pods -w
+Wait until all pods show STATUS: Running
 
-## 🧪 Testing
+Access the service:
 
-For comprehensive testing instructions, refer to the **GROUPNN_INSTRUCTIONS.pdf** file included in the submission.
+bash
+Copy code
+minikube service flask-app-service
+📊 Service Ports
+Service	Port	Protocol
+flask-app	5000	HTTP
+review-classifier	50051	gRPC
+relevance-scorer	50052	gRPC
+scraper	50053	gRPC
+mongo-store	50054	gRPC
+redis	6379	TCP
+mongo	27017	TCP
 
-The PDF contains:
-- Detailed testing scenarios
-- Expected outputs for each test case
-- Troubleshooting guide
-- Performance benchmarks
+🐛 Troubleshooting
+Port conflicts:
+Check if ports are in use
 
-## 🛠️ Built With
-
-- **Backend:** Flask, Python 3.10+
-- **ML Models:** BERT (Pretrained Transformers)
-- **Communication:** gRPC, Protocol Buffers
-- **Databases:** MongoDB 7, Redis
-- **Orchestration:** Docker Compose, Kubernetes
-- **Container Registry:** Docker Hub
-
-## 📦 Docker Images
-
-All microservice images are hosted on Docker Hub:
-
-- `caffeinatedkong/flask-app:latest`
-- `caffeinatedkong/review-classifier:latest`
-- `caffeinatedkong/relevance-scorer:latest`
-- `caffeinatedkong/scraper:latest`
-- `caffeinatedkong/mongo-store:latest`
-- `caffeinatedkong/scheduler:latest`
-
-Public repositories available at: https://hub.docker.com/u/caffeinatedkong
-
-## 🔧 Configuration
-
-All services are pre-configured via `docker-compose.yml`. No manual configuration required for basic deployment.
-
-**Environment Variables:**
-- `PYTHONUNBUFFERED=1` - Real-time Python logging
-- Service hostnames auto-configured via Docker network
-
-## 📊 Service Ports
-
-| Service            | Port  | Protocol |
-|--------------------|-------|----------|
-| flask-app          | 5000  | HTTP     |
-| review-classifier  | 50051 | gRPC     |
-| relevance-scorer   | 50052 | gRPC     |
-| scraper            | 50053 | gRPC     |
-| mongo-store        | 50054 | gRPC     |
-| redis              | 6379  | TCP      |
-| mongo              | 27017 | TCP      |
-
-## 🐛 Troubleshooting
-
-**Port conflicts:**
-```bash
-# Check if ports are in use
+bash
+Copy code
 netstat -an | findstr "5000"
+Stop conflicting services or modify docker-compose.yml ports
 
-```
+Services not starting:
+Check service logs
 
-**Services not starting:**
-```bash
-# Check service logs
+bash
+Copy code
 docker-compose logs <service-name>
+Increase Docker memory allocation in Docker Desktop Settings
 
-```
+Old cached images:
 
-**Old cached images:**
-```bash
+bash
+Copy code
 docker-compose down
 docker rmi -f caffeinatedkong/<service-name>:latest
 docker-compose pull
 docker-compose up -d
-```
+📝 Project Information
+Course: CSC3104 - Cloud and Distributed Computing
+Institution: Singapore Institute of Technology
+Submission Date: November 16, 2025
 
-## 📝 Project Information
-
-**Course:** CSC3104 - Cloud and Distributed Computing  
-**Institution:** Singapore Institute of Technology  
-**Submission Date:** November 16, 2025
-
-## 👥 Contributors
-
+👥 Contributors
 Group 09 - FraudBuster Team
 
-## 📄 License
-
+📄 License
 This project is submitted as part of academic coursework.
 
----
+For detailed testing instructions and submission requirements, please refer to GROUP09_INSTRUCTIONS.pdf.
 
-For detailed testing instructions and submission requirements, please refer to **GROUP09_INSTRUCTIONS.pdf**.
+vbnet
+Copy code
+
+### How to Add Images in Markdown:
+
+You can insert images into your README by using the following syntax:
+
+```markdown
+![Alt text](path_to_image)
+For local images: If your images are stored locally in a folder, like /assets/images/, use:
+
+markdown
+Copy code
+![Scraper Output](assets/images/scraper_output.png)
+For images hosted online: If the image is hosted online, use the full URL:
+
+markdown
+Copy code
+![App Screenshot](https://link_to_image.com/screenshot.png)
